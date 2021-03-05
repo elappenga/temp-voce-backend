@@ -13,6 +13,9 @@ app.use(express.urlencoded({extended: false}))
 
 app.use(express.json())
 
+app.get("/", (req, res) => {
+    res.send({data:'data'});
+})
 app.use('/twitter', twitter);
 
 app.listen(port, () => console.log(`listening on port ${port}`));
