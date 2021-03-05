@@ -2,14 +2,14 @@ const express = require('express');
 const app = express();
 const twitter = require('./routes/twitter');
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const cors = require("cors");
 app.use(cors());
 
-app.use(express.static(__dirname + "/public"));
+// app.use(express.static(__dirname + "/public"));
 
-app.use(express.urlencoded({extended: false}))
+// app.use(express.urlencoded({extended: false}))
 
 app.use(express.json())
 
