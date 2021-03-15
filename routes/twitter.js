@@ -2,6 +2,7 @@ const express = require('express');
 const twitter = express.Router();
 var Twitter = require('twitter');
 const needle = require('needle');
+let token = 'AAAAAAAAAAAAAAAAAAAAAJMNNQEAAAAA46Ip5l4MvLUrfg7vBnlPvBT6OYw%3DPXcBbC1DFiHG22emW1W3flblYIUQeWYCDSGiWvYPIZhrPGc2U9';
  
 var client = new Twitter({
     consumer_key: 'sWfwBmRZHg2u0CPThpo0JHY0j',
@@ -11,8 +12,8 @@ var client = new Twitter({
     bearer_token: 'AAAAAAAAAAAAAAAAAAAAAJMNNQEAAAAA46Ip5l4MvLUrfg7vBnlPvBT6OYw%3DPXcBbC1DFiHG22emW1W3flblYIUQeWYCDSGiWvYPIZhrPGc2U9'
   });
 
-twitter.get('/', (req, res) => {
-    const params = {screen_name: 'NodeJS'};
+twitter.get('/:username', (req, res) => {
+    const params = {screen_name: req.params.username, count: 10};
     console.log(params);
 
     client.get(`statuses/user_timeline`, params)
@@ -24,44 +25,39 @@ twitter.get('/', (req, res) => {
     })
 })
 
+//******************************************************************** */
 //gets a users 7 most recent tweets based on user searched input for specific user
-let token = 'AAAAAAAAAAAAAAAAAAAAAJMNNQEAAAAA46Ip5l4MvLUrfg7vBnlPvBT6OYw%3DPXcBbC1DFiHG22emW1W3flblYIUQeWYCDSGiWvYPIZhrPGc2U9';
+// const usernameURL = "https://api.twitter.com/2/tweets/search/recent";
 
-twitter.get('/:username', (req, res) => {
-async function getRequest() {
-    const endpointUrl = "https://api.twitter.com/2/tweets/search/recent";
-    const params = {
-        'query': `from:${req.params.username} -is:retweet`,
-        'tweet.fields': 'author_id'
-    }
+// async function getTweetsByUsername(req, r) {
+//     const params = {
+//                 'query': `from:${req.params.username} -is:retweet`,
+//                 'tweet.fields': 'author_id',
+//             }
 
-    const res = await needle('get', endpointUrl, params, {
-        headers: {
-            "User-Agent": "v2RecentSearchJS",
-            "authorization": `Bearer ${token}`
-        }
-    })
+//     const res = await needle('get', usernameURL, params, {
+//         headers: {
+//             "User-Agent": "v2UserLookupJS",
+//             "authorization": `Bearer ${token}`
+//         }
+//     })
 
-    if (res.body) {
-        return res.body;
-    } else {
-        throw new Error('Unsuccessful request');
-    }
-}
-   (async () => {
-    try {
-        // Make request
-        const response = await getRequest();
-        res.send(response);
+//     if (res.body) {
+//         return r.send(res.body);
+//     } else {
+//         throw new Error('Unsuccessful request')
+//     }
+// }
 
-    } catch (e) {
-        console.log(e);
-        process.exit(-1);
-    }
-    process.exit();
-})();
-})
+// twitter.get('/:username', (req, res) => {
 
+//     getTweetsByUsername(req, res); 
+
+// })
+
+
+//******************************************************************** */
+//search for user
 const endpointURL = "https://api.twitter.com/2/users/by?usernames="
 
 async function getRequest(req, r) {
@@ -85,7 +81,6 @@ async function getRequest(req, r) {
     }
 }
 
-//search for user. 
 twitter.get('/userbase/:usernames', (req, res) => {
     
     getRequest(req, res);
@@ -93,6 +88,7 @@ twitter.get('/userbase/:usernames', (req, res) => {
     })
 
 
+//******************************************************************** */
 //searches for tweets based on hashtags
 twitter.get('/tweets/:hashtag', (req, res) => {
 
@@ -117,24 +113,6 @@ twitter.get('/tweets/:hashtag', (req, res) => {
         }
     }
     
-    (async () => {
-    
-        try {
-            // Make request
-            const response = await getRequest();
-            console.dir(response, {
-                depth: null,
-                colors: true
-            });
-
-            res.send(response);
-    
-        } catch (e) {
-            console.log(e);
-            process.exit(-1);
-        }
-        process.exit();
-    })();
     })
   
 module.exports = twitter;
