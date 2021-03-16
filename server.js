@@ -84,7 +84,7 @@ app.get('/handles/:handle', async (req, res) => {
 
 //Add new handle to db//
 
-app.post("/handles", async (req, res) => {
+app.post("/add-handle", async (req, res) => {
     try {
         const { handle } = req.body;
         const newHandle = await pool.query(
@@ -92,7 +92,7 @@ app.post("/handles", async (req, res) => {
             [handle]
         );
 
-        res.json(newHandle);
+        res.json(newHandle.rows);
     } catch (err) {
         console.error(err.message);
     }
