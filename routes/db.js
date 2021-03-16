@@ -1,16 +1,32 @@
-const Pool = require('pg').Pool;
-
+const { Pool } = require('pg');
+try {
+  // When not running via Heroku, this will load the .env file.
+  require('dotenv').config();
+} catch (e) {
+  // When running with Heroku, dotenv doesn't need to be available.
+}
+const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({
-    // user: "ajtjprzndinjuf",
-    // password: "cbd5d9df7efa0e003cbe6ddeca7478478ae54aab44e9cec87ddfe828c1e8b5c1",
-    // database: "d11aj4aulindol",
-    // host: "ec2-35-171-57-132.compute-1.amazonaws.com",
-    user: 'postgres',
-    password: 'password',
-    database: 'VoceFemme',
-    host: 'localhost',
-    port: "5432",
-    ssl: false
+  connectionString: connectionString,
+  ssl: connectionString.includes('localhost') ? false : { rejectUnauthorized: false }
 });
 
 module.exports = pool;
+
+
+// const Pool = require('pg').Pool;
+
+// const pool = new Pool({
+//     // user: "evxnzlseaixlbs",
+//     // password: "33743f41727f7961daa8b87147916afa4122cab55ac68262c250246ba8fefc5f",
+//     // database: "d1b2anusq9k3td",
+//     // host: "ec2-34-195-233-155.compute-1.amazonaws.com",
+//     // user: 'postgres',
+//     // password: 'password',
+//     // database: 'VoceFemme',
+//     // host: 'localhost',
+//     port: "5432",
+//     ssl: false
+// });
+
+// module.exports = pool;

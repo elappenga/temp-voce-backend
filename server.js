@@ -33,12 +33,13 @@ app.get('/handles/:handle', async (req, res) => {
     const { handle } = req.params;
     try {
         const account = await pool.query(
-            `select h.handle AS handle, 
+            `select h.handle AS handle,
+            array_agg(tagmap.tag_id) AS tag_ids,
             array_agg(tags.tag_name) AS tags
             from handles h 
             inner join tagmap on tagmap.handle_id = h.id 
             inner join tags on tagmap.tag_id = tags.id 
-            where h.handle=$1
+            where h.handle iLIKE $1
             group by h.handle`, [handle]);
 
             res.json(account.rows);
@@ -62,6 +63,22 @@ app.get('/handles/:handle', async (req, res) => {
         res.json(tag_name.rows);
     } catch (error) {
         console.error(err.message);
+    }
+    });
+
+    //Get current list of tag groups and their tags//
+    app.get('/tag-groups', async (req, res) => {
+    try {
+        const tag_list = await pool.query(
+            `select tgroups.group_name AS group_name,
+            array_agg(tags.id) AS tag_ids,
+            array_agg(tags.tag_name) AS tags
+            from tags
+            inner join tgroups on tgroups.id = tags.tag_group_id
+            group by tgroups.group_name`);
+        res.json(tag_list.rows);
+    } catch (error) {
+        console.error(err.message);        
     }
     });
 
