@@ -17,6 +17,8 @@ app.use(express.json())
 app.use('/twitter', twitter);
 app.use('/db', pool);
 
+app.use('/db', pool);
+
 app.listen(port, () => console.log(`listening on port ${port}`));
 
 // app.use(express.static(__dirname + "/public"));
