@@ -1,5 +1,5 @@
 const express = require('express');
-// const { Pool } = require('pg');
+const { Pool } = require('pg');
 const db = express.Router();
 
 try {
@@ -8,30 +8,12 @@ try {
 } catch (e) {
   // When running with Heroku, dotenv doesn't need to be available.
 }
-// const connectionString = process.env.DATABASE_URL;
-// const pool = new Pool({
-//   connectionString: connectionString,
-//   ssl: connectionString.includes('localhost') ? false : { rejectUnauthorized: false }
-// });
-
-const pool = require('../connection');
-
-function getTags(req, res) {
-  const tag_list = pool.query(
-    `select tgroups.group_name AS group_name,
-    tags.id AS tag_id,
-    tags.tag_name AS tag
-    from tags
-    inner join tgroups on tgroups.id = tags.tag_group_id
-    order by tgroups.group_name`);
-  res.json(tag_list.rows);
-  res.send(tag_list.rows);
-}
-
-db.get('/', (req, res) => {
-  console.log("hello");
-  getTags(req, res);
+const connectionString = process.env.DATABASE_URL;
+const pool = new Pool({
+  connectionString: connectionString,
+  ssl: connectionString.includes('localhost') ? false : { rejectUnauthorized: false }
 });
+
 
 //DB endpoints//
 
@@ -101,17 +83,16 @@ db.get('/handles/:handle', async (req, res) => {
           inner join tgroups on tgroups.id = tags.tag_group_id
           order by tgroups.group_name`);
       res.json(tag_list.rows);
-      res.send(tag_list.rows);
   } catch (error) {
       console.error(err.message);        
   }
   });
 
 //Add new handle to db//
-
-db.post("/add-handle", async (req, res) => {
+//need to be able to access data that comes in from 
+db.post("/add-handle/:handle", async (req, res) => {
   try {
-      const { handle } = req.body;
+      const handle  = req.params.handle;
       const newHandle = await pool.query(
           "INSERT INTO handles (handle) VALUES ($1) RETURNING *",
           [handle]
@@ -137,32 +118,6 @@ db.post("/add-tagmap", async (req, res) => {
       console.error(err.message);
   }
 });
-
-module.exports = db;
-
-// module.exports = pool;
-
-
-
-const express = require('express');
-// const { Pool } = require('pg');
-const db = express.Router();
-
-db.get('/tag-groups', async (req, res) => {
-  try {
-      const tag_list = await pool.query(
-          `select tgroups.group_name AS group_name,
-          array_agg(tags.id) AS tag_ids,
-          array_agg(tags.tag_name) AS tags
-          from tags
-          inner join tgroups on tgroups.id = tags.tag_group_id
-          group by tgroups.group_name`);
-      res.json(tag_list.rows);
-  } catch (error) {
-      console.error(err.message);        
-  }
-  });
-
 
 module.exports = db;
 
