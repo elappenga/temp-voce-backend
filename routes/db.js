@@ -11,8 +11,31 @@ const pool = new Pool({
   ssl: connectionString.includes('localhost') ? false : { rejectUnauthorized: false }
 });
 
-module.exports = pool;
+// module.exports = pool;
 
+
+
+const express = require('express');
+// const { Pool } = require('pg');
+const db = express.Router();
+
+db.get('/tag-groups', async (req, res) => {
+  try {
+      const tag_list = await pool.query(
+          `select tgroups.group_name AS group_name,
+          array_agg(tags.id) AS tag_ids,
+          array_agg(tags.tag_name) AS tags
+          from tags
+          inner join tgroups on tgroups.id = tags.tag_group_id
+          group by tgroups.group_name`);
+      res.json(tag_list.rows);
+  } catch (error) {
+      console.error(err.message);        
+  }
+  });
+
+
+module.exports = db;
 
 // const Pool = require('pg').Pool;
 
