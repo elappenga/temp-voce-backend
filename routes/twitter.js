@@ -10,7 +10,7 @@ var client = new Twitter({
   });
 twitter.get('/:username', (req, res) => {
     const params = {screen_name: req.params.username, count: 10};
-    console.log(params);
+    // console.log(params);
     client.get(`statuses/user_timeline`, params)
     .then(timeline => {
         res.send(timeline);
@@ -71,7 +71,7 @@ twitter.get('/userbase/:usernames', (req, res) => {
 twitter.get('/tweets/:hashtag', (req, res) => {
     const endpointURL = "https://api.twitter.com/2/users/by?usernames="
     async function getRequest() {
-        console.log(req.params.usernames);
+        // console.log(req.params.usernames);
         const params = {
             // 'query': `#dogs -is:retweet` start here 
         }
